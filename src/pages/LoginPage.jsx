@@ -44,63 +44,77 @@ export default function LoginPage() {
     }
   };
 
+  const isLogin = mode === 'login';
+
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center bg-white px-7">
+    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-white px-6 pb-8 pt-16">
       {/* 로고 */}
-      <div className="mb-12 text-center">
-        <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">
-          돈<span className="text-violet-600">독</span>
+      <div className="mb-10 flex items-center gap-2">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-900 text-sm font-extrabold text-white">독</span>
+        <span className="text-xl font-extrabold tracking-tight text-gray-900">돈독</span>
+      </div>
+
+      {/* 인사 헤딩 */}
+      <div className="mb-9">
+        <h1 className="text-[28px] font-extrabold leading-snug text-gray-900">
+          {isLogin ? (
+            <>다시 오셨네요 👋<br />오늘도 독하게 가볼까요?</>
+          ) : (
+            <>독한 여정,<br />지금 시작해요 💪</>
+          )}
         </h1>
-        <p className="mt-4 text-lg font-bold text-gray-700">돈독하게 모여 독하게 빼자 💪</p>
+        <p className="mt-3 text-[15px] text-gray-500">
+          {isLogin ? '로그인하고 우리 팀 현황을 확인하세요.' : '이메일로 간단히 가입할 수 있어요.'}
+        </p>
       </div>
 
       {/* 폼 */}
-      <form onSubmit={submit} className="space-y-7">
-        {mode === 'signup' && (
-          <UnderlineField label="이름">
-            <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="독한이" maxLength={30} />
-          </UnderlineField>
+      <form onSubmit={submit} className="space-y-4">
+        {!isLogin && (
+          <Field label="이름">
+            <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="이름을 입력해 주세요" maxLength={30} />
+          </Field>
         )}
 
-        <UnderlineField label="이메일">
-          <input className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" autoComplete="username" />
-        </UnderlineField>
+        <Field label="이메일">
+          <input className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="이메일을 입력해 주세요" autoComplete="username" />
+        </Field>
 
-        <UnderlineField label="비밀번호">
+        <Field label="비밀번호">
           <div className="relative">
             <input
-              className={inputCls}
+              className={`${inputCls} pr-12`}
               type={showPw ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="6자 이상"
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              placeholder="6자 이상 입력해 주세요"
+              autoComplete={isLogin ? 'current-password' : 'new-password'}
             />
-            <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-0 bottom-2 text-gray-400" aria-label="비밀번호 표시">
+            <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" aria-label="비밀번호 표시">
               {showPw ? <EyeOff /> : <Eye />}
             </button>
           </div>
-        </UnderlineField>
+        </Field>
 
         {msg && <p className="text-sm font-medium text-red-500">{msg}</p>}
 
         <button
           disabled={busy}
-          className="w-full rounded-2xl bg-violet-600 py-4 text-lg font-bold text-white shadow-lg shadow-violet-200 transition active:scale-[0.98] disabled:opacity-60"
+          className="mt-2 w-full rounded-xl bg-gray-900 py-4 text-[16px] font-bold text-white transition active:scale-[0.98] disabled:bg-gray-300"
         >
-          {busy ? '처리중…' : mode === 'login' ? '로그인' : '가입하기'}
+          {busy ? '처리중…' : isLogin ? '로그인' : '가입하기'}
         </button>
       </form>
 
       {/* 하단 전환 */}
-      <p className="mt-7 text-center text-sm text-gray-400">
-        {mode === 'login' ? '계정이 없으신가요? ' : '이미 계정이 있으신가요? '}
+      <p className="mt-auto pt-10 text-center text-sm text-gray-400">
+        {isLogin ? '아직 계정이 없으신가요? ' : '이미 계정이 있으신가요? '}
         <button
           type="button"
-          onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setMsg(''); }}
-          className="font-bold text-violet-600 underline underline-offset-2"
+          onClick={() => { setMode(isLogin ? 'signup' : 'login'); setMsg(''); }}
+          className="font-bold text-gray-900 underline underline-offset-2"
         >
-          {mode === 'login' ? '회원가입' : '로그인'}
+          {isLogin ? '회원가입' : '로그인'}
         </button>
       </p>
     </div>
@@ -108,12 +122,12 @@ export default function LoginPage() {
 }
 
 const inputCls =
-  'w-full border-0 border-b border-gray-200 bg-transparent pb-2 pt-1 text-lg font-semibold text-gray-900 placeholder-gray-300 focus:border-violet-600 focus:outline-none focus:ring-0';
+  'w-full rounded-xl border border-transparent bg-gray-100 px-4 py-3.5 text-[15px] text-gray-900 placeholder-gray-400 focus:border-gray-900 focus:bg-white focus:outline-none transition';
 
-function UnderlineField({ label, children }) {
+function Field({ label, children }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-base font-bold text-gray-900">{label}</span>
+      <span className="mb-1.5 block text-sm font-semibold text-gray-700">{label}</span>
       {children}
     </label>
   );
@@ -121,19 +135,15 @@ function UnderlineField({ label, children }) {
 
 function Eye() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
-      <circle cx="12" cy="12" r="3" />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" />
     </svg>
   );
 }
-
 function EyeOff() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c6.5 0 10 7 10 7a18 18 0 0 1-2.2 3.2M6.6 6.6A18 18 0 0 0 2 11s3.5 7 10 7a10.9 10.9 0 0 0 4.2-.8" />
-      <path d="m2 2 20 20" />
-      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9.9 4.2A10.9 10.9 0 0 1 12 4c6.5 0 10 7 10 7a18 18 0 0 1-2.2 3.2M6.6 6.6A18 18 0 0 0 2 11s3.5 7 10 7a10.9 10.9 0 0 0 4.2-.8" /><path d="m2 2 20 20" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
     </svg>
   );
 }

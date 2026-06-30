@@ -132,7 +132,7 @@ export default function InbodyPage() {
           <button type="button" onClick={() => fileRef.current?.click()} className="rounded-md bg-gray-100 px-3 py-1.5 text-sm">
             📷 사진으로 자동 입력
           </button>
-          <input ref={fileRef} type="file" accept="image/*" capture="environment" hidden onChange={onPickPhoto} />
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPickPhoto} />
         </div>
 
         {ocrState === 'uploading' && <p className="text-sm text-gray-500">사진 분석 중…</p>}

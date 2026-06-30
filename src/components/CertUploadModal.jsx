@@ -75,7 +75,7 @@ export default function CertUploadModal({ open, onClose, onDone, userId, seasonI
         <button onClick={() => fileRef.current?.click()} className="w-full rounded-lg border-2 border-dashed border-gray-300 py-6 text-gray-500">
           {preview ? <img src={preview} alt="" className="mx-auto max-h-48 rounded" /> : '📷 사진 첨부'}
         </button>
-        <input ref={fileRef} type="file" accept="image/*" capture="environment" hidden onChange={pick} />
+        <input ref={fileRef} type="file" accept="image/*" hidden onChange={pick} />
 
         <textarea className="w-full rounded-lg border border-gray-300 p-2 text-sm" rows={2} placeholder="메모 (선택)" value={memo} onChange={(e) => setMemo(e.target.value)} />
 
