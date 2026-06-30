@@ -2,8 +2,9 @@ import { NavLink } from 'react-router-dom';
 
 const TABS = [
   { to: '/', label: '우리팀', end: true, icon: IconHome },
+  { to: '/feed', label: '피드', icon: IconFeed },
   { to: '/inbody', label: '인바디', icon: IconChart },
-  { to: '/feed', label: '피드·달력', icon: IconFeed },
+  { to: '/ranking', label: '랭킹', icon: IconTrophy },
 ];
 
 export default function TabBar() {
@@ -41,6 +42,6 @@ function IconChart() {
 function IconFeed() {
   return (<svg {...svg}><rect x="3" y="3" width="18" height="18" rx="4" /><path d="M3 9h18" /><circle cx="7" cy="6" r=".5" fill="currentColor" /></svg>);
 }
-function IconCalendar() {
-  return (<svg {...svg}><rect x="3" y="4" width="18" height="17" rx="3" /><path d="M3 9h18M8 2v4M16 2v4" /></svg>);
+function IconTrophy() {
+  return (<svg {...svg}><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z" /><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" /><path d="M9 14.5V17h6v-2.5M8 21h8M12 17v4" /></svg>);
 }

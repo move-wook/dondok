@@ -165,6 +165,13 @@ export async function getMonthCerts(userId, seasonId, fromDate, toDate) {
   return (data ?? []).map((c) => ({ ...c, imageUrl: c.image_path ? urlMap[c.image_path] ?? null : null }));
 }
 
+// 팀원별 통계 (감량률/인증횟수/오늘 인증여부)
+export async function getMemberStats(seasonId, teamId) {
+  const { data, error } = await supabase.rpc('member_stats', { p_season_id: seasonId, p_team_id: teamId });
+  if (error) throw error;
+  return data ?? [];
+}
+
 // 팀 스트릭 + 주간 공동목표 (RPC)
 export async function getTeamProgress(teamId, seasonId) {
   const [streakRes, weekRes] = await Promise.all([

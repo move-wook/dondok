@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { getActiveSeason, getRanking, getTeamProgress } from '../lib/queries';
-import RankingTable from '../components/RankingTable';
+import { useAuth } from '../auth/AuthProvider';
+import { getActiveSeason, getRanking, getTeamProgress, getMemberStats } from '../lib/queries';
 import TeamSummaryCard from '../components/TeamSummaryCard';
+import MemberList from '../components/MemberList';
 
 export default function DashboardPage() {
   const { profile } = useOutletContext();
-  const [ranking, setRanking] = useState([]);
+  const { user } = useAuth();
   const [progress, setProgress] = useState({ streak: 0, week: { done: 0, goal: 0 } });
+  const [rankInfo, setRankInfo] = useState({ rank: null, fat: 0 });
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState('');
 
@@ -15,16 +18,18 @@ export default function DashboardPage() {
     (async () => {
       try {
         const season = await getActiveSeason();
-        if (!season) {
-          setErr('진행 중인 시즌이 없습니다.');
-          return;
-        }
-        const [rank, prog] = await Promise.all([
+        if (!season) { setErr('진행 중인 시즌이 없습니다.'); return; }
+        if (!profile.team_id) return;
+        const [rank, prog, mem] = await Promise.all([
           getRanking(season.season_id),
-          profile.team_id ? getTeamProgress(profile.team_id, season.season_id) : Promise.resolve(null),
+          getTeamProgress(profile.team_id, season.season_id),
+          getMemberStats(season.season_id, profile.team_id).catch(() => null), // RPC 미배포 대비
         ]);
-        setRanking(rank);
-        if (prog) setProgress(prog);
+        const idx = rank.findIndex((r) => r.team_id === profile.team_id);
+        setRankInfo({ rank: idx >= 0 ? idx + 1 : null, fat: idx >= 0 ? Number(rank[idx].avg_fat_loss_pct) : 0 });
+        setProgress(prog);
+        if (mem) setMembers(mem);
+        else setErr('member_stats RPC 미배포 — 0005_member_stats.sql 실행 필요');
       } catch (e) {
         setErr(e.message ?? '불러오기 실패');
       } finally {
@@ -33,27 +38,27 @@ export default function DashboardPage() {
     })();
   }, [profile.team_id]);
 
-  const myRow = ranking.findIndex((r) => r.team_id === profile.team_id);
-
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-4 p-4">
       <TeamSummaryCard
         teamName={profile.team?.name}
         inviteCode={profile.team?.invite_code}
-        rank={myRow >= 0 ? myRow + 1 : null}
-        fatLossPct={myRow >= 0 ? Number(ranking[myRow].avg_fat_loss_pct) : 0}
+        rank={rankInfo.rank}
+        fatLossPct={rankInfo.fat}
         streak={progress.streak}
         week={progress.week}
       />
 
       <div>
-        <h3 className="mb-3 mt-2 text-lg font-extrabold text-gray-900">팀 랭킹</h3>
+        <h3 className="mb-3 mt-2 flex items-baseline gap-1.5 text-lg font-extrabold text-gray-900">
+          팀원 {members.length > 0 && <span className="text-sm font-bold text-gray-400">{members.length}명</span>}
+        </h3>
         {loading ? (
           <p className="text-sm text-gray-400">불러오는 중…</p>
-        ) : err ? (
-          <p className="text-sm text-red-500">{err}</p>
+        ) : members.length === 0 ? (
+          <p className="rounded-2xl border border-gray-100 bg-white p-5 text-sm text-gray-400">{err || '팀원 정보가 없어요.'}</p>
         ) : (
-          <RankingTable rows={ranking} myTeamId={profile.team_id} />
+          <MemberList members={members} currentUserId={user.id} />
         )}
       </div>
     </div>

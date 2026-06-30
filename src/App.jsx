@@ -9,6 +9,7 @@ import DashboardPage from './pages/DashboardPage';
 import InbodyPage from './pages/InbodyPage';
 import CalendarPage from './pages/CalendarPage';
 import FeedPage from './pages/FeedPage';
+import RankingPage from './pages/RankingPage';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/inbody" element={<InbodyPage />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/feed" element={<FeedPage />} />
+            <Route path="/ranking" element={<RankingPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
