@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../auth/AuthProvider';
-import { getMyProfile } from '../lib/queries';
+import { getMyProfile, deleteAccount } from '../lib/queries';
 
 export default function ProfileSetupPage() {
   const { user, signOut } = useAuth();
@@ -74,8 +74,22 @@ export default function ProfileSetupPage() {
           {saving ? '저장중…' : '저장하고 계속'}
         </button>
       </form>
+
+      <button onClick={onDeleteAccount} className="mt-10 w-full py-2 text-xs text-gray-300 underline underline-offset-2">
+        회원 탈퇴
+      </button>
     </div>
   );
+
+  async function onDeleteAccount() {
+    if (!window.confirm('정말 탈퇴할까요?\n모든 기록이 삭제되고 되돌릴 수 없어요.')) return;
+    try {
+      await deleteAccount();
+      window.location.assign('/login');
+    } catch (e) {
+      alert(e.message === 'LEADER' ? '팀 리더는 먼저 팀을 삭제하세요.' : '탈퇴 실패: ' + (e.message ?? e));
+    }
+  }
 }
 
 const inputCls = 'w-full rounded-xl border border-transparent bg-gray-100 px-4 py-3.5 text-[15px] text-gray-900 placeholder-gray-400 focus:border-gray-900 focus:bg-white focus:outline-none transition';
