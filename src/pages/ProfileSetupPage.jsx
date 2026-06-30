@@ -32,12 +32,12 @@ export default function ProfileSetupPage() {
     try {
       const { error } = await supabase
         .from('profile')
-        .update({
+        .upsert({
+          id: user.id,
           nickname: nickname.trim(),
           gender: gender || null,
           height_cm: heightCm ? Number(heightCm) : null,
-        })
-        .eq('id', user.id);
+        });
       if (error) throw error;
       const p = await getMyProfile(user.id);
       navigate(p?.team_id ? '/' : '/setup/team', { replace: true });
