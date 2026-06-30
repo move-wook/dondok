@@ -1,14 +1,13 @@
-// 돈독 — 인바디 사진 OCR Edge Function (Deno / Supabase)
-// 배포: supabase functions deploy extract_inbody
-// 시크릿: supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
-//   (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY 는 런타임에 자동 주입됨)
+// 돈독 — 인바디 사진 OCR Edge Function (Deno / Supabase) — Google Gemini(무료 티어)
+// 배포: npx supabase functions deploy extract_inbody
+// 시크릿: npx supabase secrets set GEMINI_API_KEY=...   (aistudio.google.com 무료 키)
+//   (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY 는 런타임 자동 주입)
 //
 // 입력:  { "path": "{user_id}/inbody/xxx.jpg" }  (cert-images 버킷 경로)
 // 출력:  { weightKg, skeletalMuscleKg, bodyFatKg, bodyFatPercent, confidence }
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { encodeBase64 } from "jsr:@std/encoding/base64";
-import Anthropic from "npm:@anthropic-ai/sdk@0.69.0";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -21,19 +20,15 @@ const json = (body: unknown, status = 200) =>
     headers: { ...cors, "Content-Type": "application/json" },
   });
 
-// 추출 결과 스키마 (구조화 출력으로 JSON 강제)
-const SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  properties: {
-    weightKg: { type: "number" },
-    skeletalMuscleKg: { type: "number" },
-    bodyFatKg: { type: "number" },
-    bodyFatPercent: { type: "number" },
-    confidence: { type: "string", enum: ["high", "low"] },
-  },
-  required: ["weightKg", "skeletalMuscleKg", "bodyFatKg", "bodyFatPercent", "confidence"],
-};
+// 무료 티어 Flash 모델. 필요시 "gemini-2.0-flash" 로 교체 가능.
+const MODEL = "gemini-2.5-flash";
+
+const PROMPT =
+  "이 InBody(인바디) 결과지 사진에서 다음을 읽어 JSON으로만 답해줘. " +
+  "키는 정확히: weightKg(체중,kg), skeletalMuscleKg(골격근량,kg), bodyFatKg(체지방량,kg), " +
+  "bodyFatPercent(체지방률,%), confidence(\"high\" 또는 \"low\"). " +
+  "선명히 읽히면 confidence=\"high\". 흐리거나 인바디 결과지가 아니면 수치는 0, confidence=\"low\". " +
+  "숫자는 number 타입으로.";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
@@ -52,35 +47,39 @@ Deno.serve(async (req) => {
 
     const bytes = new Uint8Array(await file.arrayBuffer());
     const base64 = encodeBase64(bytes);
-    const mediaType = (file.type || "image/jpeg") as "image/jpeg" | "image/png" | "image/webp";
+    const mimeType = file.type || "image/jpeg";
 
-    // 2) 비전 모델로 수치 추출 (기본 claude-opus-4-8 — 비용 절감 시 claude-haiku-4-5 로 교체 가능)
-    const anthropic = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_API_KEY")! });
-    const msg = await anthropic.messages.create({
-      model: "claude-opus-4-8",
-      max_tokens: 1024,
-      output_config: { format: { type: "json_schema", schema: SCHEMA } },
-      messages: [
+    // 2) Gemini 비전 호출 (JSON 강제)
+    const apiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!apiKey) return json({ error: "GEMINI_API_KEY missing", confidence: "low" }, 200);
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
+    const reqBody = {
+      contents: [
         {
-          role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
-            {
-              type: "text",
-              text:
-                "이 InBody(인바디) 결과지 사진에서 다음 수치를 읽어 JSON으로 반환해줘: " +
-                "체중(weightKg, kg), 골격근량(skeletalMuscleKg, kg), 체지방량(bodyFatKg, kg), 체지방률(bodyFatPercent, %). " +
-                "확실히 읽히면 confidence=\"high\", 흐리거나 인바디 결과지가 아니면 읽은 값을 0으로 두고 confidence=\"low\".",
-            },
+          parts: [
+            { inline_data: { mime_type: mimeType, data: base64 } },
+            { text: PROMPT },
           ],
         },
       ],
-    });
+      generationConfig: { responseMimeType: "application/json", temperature: 0 },
+    };
 
-    const text = msg.content.find((b) => b.type === "text")?.text ?? "{}";
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reqBody),
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      return json({ error: "gemini error: " + t, confidence: "low" }, 200);
+    }
+    const out = await res.json();
+    const text = out?.candidates?.[0]?.content?.parts?.[0]?.text ?? "{}";
     return json(JSON.parse(text), 200);
   } catch (e) {
-    // 실패 시에도 200 + confidence:low 로 반환 → 프론트는 수기 입력으로 폴백
+    // 실패 시에도 200 + confidence:low → 프론트는 수기 입력으로 폴백
     return json({ error: String(e), confidence: "low" }, 200);
   }
 });

@@ -23,7 +23,7 @@
 |---|---|
 | 프론트 | React 18 · Vite · Tailwind CSS · React Router · recharts · dayjs |
 | 백엔드 | **Supabase** — Postgres · RLS · RPC · Auth · Storage |
-| 인바디 OCR | Supabase Edge Function (Deno) + Claude vision |
+| 인바디 OCR | Supabase Edge Function (Deno) + Google Gemini (무료 티어) |
 | 배포 | Vercel |
 
 > 서버 코드를 직접 운영하지 않고, DB·권한(RLS)·집계(RPC)로 해결하는 BaaS 구조.
@@ -47,10 +47,10 @@ SQL Editor에서 순서대로 실행:
 5. `supabase/migrations/0004_comments.sql` (댓글)
 6. `supabase/seed.sql` (활성 시즌)
 
-(선택) 인바디 OCR:
+(선택) 인바디 OCR (Google Gemini 무료 티어):
 ```bash
-supabase functions deploy extract_inbody
-supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+npx supabase secrets set GEMINI_API_KEY=...   # aistudio.google.com 무료 키
+npx supabase functions deploy extract_inbody
 ```
 
 ## 배포
