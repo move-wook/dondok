@@ -126,6 +126,14 @@ export async function getTeamFeed(seasonId) {
   }));
 }
 
+// 회원 탈퇴 (Edge Function — 데이터+계정 삭제). 리더는 'LEADER' 사유로 차단.
+export async function deleteAccount() {
+  const { data, error } = await supabase.functions.invoke('delete_account');
+  if (error) throw error;
+  if (!data?.ok) throw new Error(data?.reason === 'leader' ? 'LEADER' : (data?.reason || '탈퇴 실패'));
+  await supabase.auth.signOut();
+}
+
 // 팀 나가기 (본인 소속 해제)
 export async function leaveTeam(userId) {
   const { error } = await supabase.from('profile').update({ team_id: null, role: 'MEMBER' }).eq('id', userId);

@@ -12,7 +12,7 @@ function genInviteCode() {
 }
 
 export default function TeamSetupPage() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState('create'); // create | join
   const [teamName, setTeamName] = useState('');
@@ -73,6 +73,9 @@ export default function TeamSetupPage() {
 
   return (
     <div className="mx-auto max-w-sm px-6 py-10">
+      <div className="mb-4 flex justify-end">
+        <button onClick={signOut} className="text-sm text-gray-400">로그아웃</button>
+      </div>
       <h2 className="text-xl font-bold text-gray-800">팀 만들기 / 참여</h2>
       <div className="mt-5 flex rounded-lg bg-gray-100 p-1 text-sm">
         <TabBtn active={tab === 'create'} onClick={() => setTab('create')}>팀 만들기</TabBtn>

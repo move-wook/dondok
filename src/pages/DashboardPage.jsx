@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
-import { getActiveSeason, getRanking, getTeamProgress, getMemberStats, leaveTeam, deleteTeam } from '../lib/queries';
+import { getActiveSeason, getRanking, getTeamProgress, getMemberStats, leaveTeam, deleteTeam, deleteAccount } from '../lib/queries';
 import TeamSummaryCard from '../components/TeamSummaryCard';
 import MemberList from '../components/MemberList';
 
@@ -73,6 +73,9 @@ export default function DashboardPage() {
             팀 나가기
           </button>
         )}
+        <button onClick={onDeleteAccount} className="mt-2 w-full py-2 text-xs text-gray-300 underline underline-offset-2">
+          회원 탈퇴
+        </button>
       </div>
     </div>
   );
@@ -86,5 +89,19 @@ export default function DashboardPage() {
     if (!window.confirm('팀을 삭제할까요? 모든 팀원이 팀에서 나가게 됩니다.')) return;
     await deleteTeam(profile.team_id);
     window.location.assign('/');
+  }
+  async function onDeleteAccount() {
+    if (profile.role === 'LEADER') {
+      alert('팀 리더는 먼저 "팀 삭제"를 한 뒤 탈퇴할 수 있어요.');
+      return;
+    }
+    if (!window.confirm('정말 탈퇴할까요?\n모든 기록(인바디·인증·댓글)이 삭제되고 되돌릴 수 없어요.')) return;
+    try {
+      await deleteAccount();
+      window.location.assign('/login');
+    } catch (e) {
+      if (e.message === 'LEADER') alert('팀 리더는 먼저 팀을 삭제하세요.');
+      else alert('탈퇴 실패: ' + (e.message ?? e));
+    }
   }
 }

@@ -5,7 +5,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { getMyProfile } from '../lib/queries';
 
 export default function ProfileSetupPage() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
   const [gender, setGender] = useState('');
@@ -50,6 +50,9 @@ export default function ProfileSetupPage() {
 
   return (
     <div className="mx-auto max-w-sm px-6 py-10">
+      <div className="mb-4 flex justify-end">
+        <button onClick={signOut} className="text-sm text-gray-400">로그아웃</button>
+      </div>
       <h2 className="text-xl font-bold text-gray-800">프로필 설정</h2>
       <p className="mt-1 text-sm text-gray-500">챌린지에 표시될 정보예요.</p>
       <form onSubmit={submit} className="mt-6 space-y-4">
