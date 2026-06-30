@@ -75,8 +75,8 @@ export default function ProfileSetupPage() {
   );
 }
 
-const inputCls = 'w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-800 focus:outline-none';
-const btnCls = 'w-full rounded-lg bg-gray-900 py-3 font-semibold text-white active:scale-95 transition disabled:opacity-50';
+const inputCls = 'w-full rounded-xl border border-transparent bg-gray-100 px-4 py-3.5 text-[15px] text-gray-900 placeholder-gray-400 focus:border-gray-900 focus:bg-white focus:outline-none transition';
+const btnCls = 'w-full rounded-xl bg-gray-900 py-4 text-[16px] font-bold text-white active:scale-[0.98] transition disabled:bg-gray-300';
 function Field({ label, children }) {
   return (
     <label className="block">

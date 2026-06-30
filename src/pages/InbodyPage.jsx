@@ -149,7 +149,7 @@ export default function InbodyPage() {
           <Field label="체지방률(%)"><input type="number" step="0.1" className={inp} value={form.bodyFatPercent} onChange={(e) => setForm({ ...form, bodyFatPercent: e.target.value })} /></Field>
         </div>
         {msg && <p className="text-sm text-gray-600">{msg}</p>}
-        <button disabled={saving} className="w-full rounded-lg bg-gray-900 py-2.5 font-semibold text-white disabled:opacity-50">
+        <button disabled={saving} className="w-full rounded-xl bg-gray-900 py-3.5 font-bold text-white active:scale-[0.98] transition disabled:bg-gray-300">
           {saving ? '저장중…' : '저장'}
         </button>
       </form>
@@ -163,7 +163,7 @@ export default function InbodyPage() {
   );
 }
 
-const inp = 'w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-gray-800 focus:outline-none';
+const inp = 'w-full rounded-xl border border-transparent bg-gray-100 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-gray-900 focus:bg-white focus:outline-none transition';
 const numOrEmpty = (v) => (typeof v === 'number' && v > 0 ? String(v) : '');
 function Field({ label, children }) {
   return (

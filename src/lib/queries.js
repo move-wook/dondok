@@ -158,7 +158,8 @@ export async function getMonthCerts(userId, seasonId, fromDate, toDate) {
     .from('certification')
     .select('cert_id, cert_date, cert_type, meal_time, image_path')
     .eq('user_id', userId).eq('season_id', seasonId)
-    .gte('cert_date', fromDate).lte('cert_date', toDate);
+    .gte('cert_date', fromDate).lte('cert_date', toDate)
+    .order('cert_id', { ascending: false }); // 최신 인증이 앞 → 달력 썸네일은 그날 "최근" 사진
   if (error) throw error;
   const urlMap = await signedUrlMap((data ?? []).map((c) => c.image_path));
   return (data ?? []).map((c) => ({ ...c, imageUrl: c.image_path ? urlMap[c.image_path] ?? null : null }));

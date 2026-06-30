@@ -17,7 +17,7 @@ export default function ReactionBar({ reactions, userId, onToggle }) {
               key={e}
               onClick={() => onToggle(e)}
               className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-sm active:scale-95 ${
-                mine(e) ? 'border-orange-300 bg-orange-50' : 'border-gray-200'
+                mine(e) ? 'border-gray-900 bg-gray-900/5' : 'border-gray-200'
               }`}
             >
               <span>{e}</span>

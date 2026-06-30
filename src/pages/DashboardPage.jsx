@@ -47,7 +47,7 @@ export default function DashboardPage() {
       />
 
       <div>
-        <h3 className="mb-2 text-sm font-semibold text-gray-600">팀 랭킹</h3>
+        <h3 className="mb-3 mt-2 text-lg font-extrabold text-gray-900">팀 랭킹</h3>
         {loading ? (
           <p className="text-sm text-gray-400">불러오는 중…</p>
         ) : err ? (

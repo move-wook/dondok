@@ -81,8 +81,8 @@ export default function CertUploadModal({ open, onClose, onDone, userId, seasonI
 
         {err && <p className="text-sm text-red-500">{err}</p>}
         <div className="flex gap-2">
-          <button onClick={onClose} className="flex-1 rounded-lg bg-gray-100 py-2.5">취소</button>
-          <button disabled={busy} onClick={submit} className="flex-1 rounded-lg bg-gray-900 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? '올리는 중…' : '인증하기'}</button>
+          <button onClick={onClose} className="flex-1 rounded-xl bg-gray-100 py-3 font-semibold text-gray-700">취소</button>
+          <button disabled={busy} onClick={submit} className="flex-1 rounded-xl bg-gray-900 py-3 font-bold text-white active:scale-[0.98] transition disabled:bg-gray-300">{busy ? '올리는 중…' : '인증하기'}</button>
         </div>
       </div>
     </div>

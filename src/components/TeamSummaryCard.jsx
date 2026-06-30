@@ -10,43 +10,41 @@ export default function TeamSummaryCard({ teamName, inviteCode, rank, fatLossPct
       await navigator.clipboard.writeText(inviteCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
-    } catch {
-      setCopied(false);
-    }
+    } catch { /* noop */ }
   };
 
   return (
-    <div className="rounded-xl border bg-white p-4">
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-lg font-bold text-gray-800">{teamName ?? '우리 팀'}</h2>
-        <span className="text-sm text-gray-500">
-          {rank ? `${rank}위` : '순위 집계 전'} · 체지방 -{(fatLossPct ?? 0).toFixed(1)}%
-        </span>
+    <div className="rounded-2xl bg-gray-900 p-5 text-white">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm text-gray-400">{rank ? `${rank}위` : '순위 집계 전'}</p>
+          <h2 className="mt-0.5 text-2xl font-extrabold">{teamName ?? '우리 팀'}</h2>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-400">체지방</p>
+          <p className="text-xl font-extrabold">-{(fatLossPct ?? 0).toFixed(1)}%</p>
+        </div>
       </div>
 
       {inviteCode && (
-        <button
-          onClick={copy}
-          className="mt-2 inline-flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-1.5 text-sm active:scale-95"
-        >
-          <span className="text-gray-500">초대코드</span>
-          <span className="font-mono font-bold tracking-widest text-gray-800">{inviteCode}</span>
+        <button onClick={copy} className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white/10 px-3 py-1.5 text-sm active:scale-95">
+          <span className="text-gray-400">초대코드</span>
+          <span className="font-mono font-bold tracking-widest">{inviteCode}</span>
           <span className="text-xs text-gray-400">{copied ? '복사됨!' : '복사'}</span>
         </button>
       )}
 
-      <div className="mt-3 flex items-center gap-4">
-        <span className="rounded-full bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-600">
-          🔥 {streak ?? 0}일 연속 풀인증
-        </span>
+      <div className="mt-4 flex items-center gap-2 text-sm">
+        <span className="rounded-full bg-white/10 px-3 py-1 font-semibold">🔥 {streak ?? 0}일 연속</span>
       </div>
-      <div className="mt-3">
-        <div className="mb-1 flex justify-between text-xs text-gray-500">
+
+      <div className="mt-4">
+        <div className="mb-1 flex justify-between text-xs text-gray-400">
           <span>이번 주 팀 인증</span>
           <span>{week?.done ?? 0} / {week?.goal ?? 0}</span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
-          <div className="h-full rounded-full bg-green-500 transition-all" style={{ width: `${pct}%` }} />
+        <div className="h-2 w-full overflow-hidden rounded-full bg-white/15">
+          <div className="h-full rounded-full bg-white transition-all" style={{ width: `${pct}%` }} />
         </div>
       </div>
     </div>
