@@ -1,22 +1,17 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FF5A1F"/>
-      <stop offset="1" stop-color="#E10E2B"/>
+      <stop offset="0" stop-color="#374151"/>
+      <stop offset="1" stop-color="#111827"/>
     </linearGradient>
   </defs>
 
-  <!-- 배경: 강렬한 라운드 스퀘어 -->
   <rect x="0" y="0" width="64" height="64" rx="14" fill="url(#bg)"/>
 
-  <!-- 덤벨: 역동적으로 살짝 기울임 -->
   <g transform="rotate(-22 32 32)" fill="#FFFFFF">
-    <!-- 핸들 -->
     <rect x="22" y="28.5" width="20" height="7" rx="2.5"/>
-    <!-- 안쪽 칼라 -->
     <rect x="19.5" y="24" width="5.5" height="16" rx="2"/>
     <rect x="39" y="24" width="5.5" height="16" rx="2"/>
-    <!-- 바깥쪽 큰 원판 -->
     <rect x="12" y="19" width="9" height="26" rx="3.5"/>
     <rect x="43" y="19" width="9" height="26" rx="3.5"/>
   </g>

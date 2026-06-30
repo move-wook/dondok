@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import ReactionBar from './ReactionBar';
 import CommentSection from './CommentSection';
 
-export default function CertCard({ cert, userId, onToggle, onAddComment, onDeleteComment }) {
+export default function CertCard({ cert, userId, onToggle, onAddComment, onDeleteComment, onDeleteCert }) {
   const isMeal = cert.cert_type === 'MEAL';
   return (
     <div className="overflow-hidden rounded-xl border bg-white">
@@ -12,7 +12,12 @@ export default function CertCard({ cert, userId, onToggle, onAddComment, onDelet
       <div className="space-y-2 p-3">
         <div className="flex items-center justify-between text-sm">
           <span className="font-semibold text-gray-800">{cert.nickname}</span>
-          <span className="text-xs text-gray-400">{dayjs(cert.created_at).format('M/D HH:mm')}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400">{dayjs(cert.created_at).format('M/D HH:mm')}</span>
+            {cert.user_id === userId && (
+              <button onClick={() => onDeleteCert?.(cert)} className="text-xs text-gray-300 hover:text-red-500">삭제</button>
+            )}
+          </div>
         </div>
         <span
           className={`inline-block rounded px-1.5 py-0.5 text-xs ${

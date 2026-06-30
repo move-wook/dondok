@@ -126,6 +126,27 @@ export async function getTeamFeed(seasonId) {
   }));
 }
 
+// 팀 나가기 (본인 소속 해제)
+export async function leaveTeam(userId) {
+  const { error } = await supabase.from('profile').update({ team_id: null, role: 'MEMBER' }).eq('id', userId);
+  if (error) throw error;
+}
+
+// 팀 삭제 (리더 전용 — 팀원 소속 해제 + 팀 삭제)
+export async function deleteTeam(teamId) {
+  const { error } = await supabase.rpc('delete_team', { p_team_id: teamId });
+  if (error) throw error;
+}
+
+// 인증 삭제 (본인 것만 — RPC가 리액션/댓글까지 정리) + 사진 제거
+export async function deleteCertification(certId, imagePath) {
+  const { error } = await supabase.rpc('delete_certification', { p_cert_id: certId });
+  if (error) throw error;
+  if (imagePath) {
+    try { await supabase.storage.from('cert-images').remove([imagePath]); } catch { /* 사진 정리는 best-effort */ }
+  }
+}
+
 // 댓글 작성 / 삭제
 export async function addComment(certId, userId, content) {
   const { error } = await supabase.from('cert_comment').insert({ cert_id: certId, user_id: userId, content });

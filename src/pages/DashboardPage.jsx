@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
-import { getActiveSeason, getRanking, getTeamProgress, getMemberStats } from '../lib/queries';
+import { getActiveSeason, getRanking, getTeamProgress, getMemberStats, leaveTeam, deleteTeam } from '../lib/queries';
 import TeamSummaryCard from '../components/TeamSummaryCard';
 import MemberList from '../components/MemberList';
 
@@ -61,6 +61,30 @@ export default function DashboardPage() {
           <MemberList members={members} currentUserId={user.id} />
         )}
       </div>
+
+      {/* 팀 관리 */}
+      <div className="pt-2">
+        {profile.role === 'LEADER' ? (
+          <button onClick={onDeleteTeam} className="w-full rounded-xl border border-red-200 py-3 text-sm font-medium text-red-500 active:scale-[0.99]">
+            팀 삭제
+          </button>
+        ) : (
+          <button onClick={onLeaveTeam} className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-500 active:scale-[0.99]">
+            팀 나가기
+          </button>
+        )}
+      </div>
     </div>
   );
+
+  async function onLeaveTeam() {
+    if (!window.confirm('팀에서 나갈까요?')) return;
+    await leaveTeam(user.id);
+    window.location.assign('/');
+  }
+  async function onDeleteTeam() {
+    if (!window.confirm('팀을 삭제할까요? 모든 팀원이 팀에서 나가게 됩니다.')) return;
+    await deleteTeam(profile.team_id);
+    window.location.assign('/');
+  }
 }

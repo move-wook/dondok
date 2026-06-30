@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { useAuth } from '../auth/AuthProvider';
-import { getActiveSeason, getTeamFeed, toggleReaction, addComment, deleteComment } from '../lib/queries';
+import { getActiveSeason, getTeamFeed, toggleReaction, addComment, deleteComment, deleteCertification } from '../lib/queries';
 import CertCard from '../components/CertCard';
 import CertUploadModal from '../components/CertUploadModal';
 
@@ -41,6 +41,11 @@ export default function FeedPage() {
   const onToggle = async (id, e) => { await toggleReaction(id, user.id, e); await load(); };
   const onAddComment = async (id, t) => { await addComment(id, user.id, t); await load(); };
   const onDeleteComment = async (id) => { await deleteComment(id); await load(); };
+  const onDeleteCert = async (cert) => {
+    if (!window.confirm('이 인증을 삭제할까요? (리액션·댓글도 함께 삭제됩니다)')) return;
+    await deleteCertification(cert.cert_id, cert.image_path);
+    await load();
+  };
 
   // 팀 인증을 날짜별로 (달력 마커 + 그날 최근 사진)
   const dayInfo = useMemo(() => {
@@ -132,7 +137,7 @@ export default function FeedPage() {
           </p>
         ) : (
           shown.map((c) => (
-            <CertCard key={c.cert_id} cert={c} userId={user.id} onToggle={onToggle} onAddComment={onAddComment} onDeleteComment={onDeleteComment} />
+            <CertCard key={c.cert_id} cert={c} userId={user.id} onToggle={onToggle} onAddComment={onAddComment} onDeleteComment={onDeleteComment} onDeleteCert={onDeleteCert} />
           ))
         )}
       </div>
