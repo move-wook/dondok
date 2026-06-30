@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.env.local
+*복사본*
+*.log
+.DS_Store
+.vite
+
+.vercel
