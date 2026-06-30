@@ -3,8 +3,7 @@ import { NavLink } from 'react-router-dom';
 const TABS = [
   { to: '/', label: '우리팀', end: true, icon: IconHome },
   { to: '/inbody', label: '인바디', icon: IconChart },
-  { to: '/feed', label: '피드', icon: IconFeed },
-  { to: '/calendar', label: '달력', icon: IconCalendar },
+  { to: '/feed', label: '피드·달력', icon: IconFeed },
 ];
 
 export default function TabBar() {
